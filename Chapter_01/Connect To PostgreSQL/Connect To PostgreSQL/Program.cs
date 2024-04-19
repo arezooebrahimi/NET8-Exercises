@@ -1,7 +1,6 @@
 using Connect_To_PostgreSQL.Data;
-using Connect_To_PostgreSQL.Dto;
 using Connect_To_PostgreSQL.Endpoints;
-using Connect_To_PostgreSQL.Entities;
+using Connect_To_PostgreSQL.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +14,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.ApplyMigration();
     app.UseSwagger();
     app.UseSwaggerUI();
 }

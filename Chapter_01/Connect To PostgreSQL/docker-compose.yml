@@ -1,0 +1,53 @@
+version: '3.4'
+
+services:
+  connecttopostgresql:
+    image: ${DOCKER_REGISTRY-}connecttopostgresql
+    container_name: webapi-container
+    build:
+      context: .
+      dockerfile: Connect To PostgreSQL/Dockerfile
+    networks: 
+      - web_api_network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: blog_db
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - web_api_network
+    restart: unless-stopped
+
+  pgadmin:
+     image: dpage/pgadmin4
+     container_name: pgadmin_container
+     environment:
+        PGADMIN_DEFAULT_EMAIL: aeo.ebrahimi@gmail.com
+        PGADMIN_DEFAULT_PASSWORD: 12345
+     volumes:
+        - pgadmin:/var/lib/pgadmin
+     ports:
+        - "8135:80"
+     networks:
+        - web_api_network
+     restart: unless-stopped
+     depends_on:
+        - postgres 
+volumes:
+  postgres:
+  pgadmin:
+
+networks:
+  web_api_network:
+     driver: bridge
