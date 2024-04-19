@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   connecttopostgresql:
-    image: ${DOCKER_REGISTRY-}connecttopostgresql
+    image: connecttopostgresql
     container_name: webapi-container
     build:
       context: .
