@@ -23,8 +23,6 @@ namespace Connect_To_PostgreSQL.Endpoints
 
                 return Results.Ok(article);
             });
-
-
             app.MapGet("articles", async (
                        AppDBContext context,
                        int page = 1,
@@ -90,7 +88,6 @@ namespace Connect_To_PostgreSQL.Endpoints
 
                 return Results.NoContent();
             });
-
 
         }
     }
