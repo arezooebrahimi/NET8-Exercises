@@ -1,9 +1,12 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApi.Endpoints;
 using MinimalApi.Models;
-
+using MinimalApi.Validators;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddAntiforgery();
 var app = builder.Build();
 
@@ -56,6 +59,23 @@ app.MapGet("/get_address", ([FromHeader] string coordinates, [FromQuery] int? li
 app.MapGet("/get_ids", ([FromQuery] int[] id) =>
 {
     return Results.Ok(id);
+});
+
+//app.MapGet("/get_person_data_with_validation", ([FromBody] Person data) =>
+//{
+//    var result = Validators.Validate(data);
+//    if (result.isValid)
+//        return Results.Ok(data);
+//    return Results.BadRequest(result.errors);
+//});
+
+
+app.MapGet("/get_person_data_with_validation", ([FromBody] Person data,IValidator<Person> validator) =>
+{
+    var result = validator.Validate(data);
+    if(result.IsValid)
+        return Results.Ok(data);
+    return Results.ValidationProblem(result.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
 });
 
 
