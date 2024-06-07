@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using Asp.Versioning.Conventions;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApi.Endpoints;
@@ -6,6 +8,15 @@ using MinimalApi.Validators;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ApiVersionReader = new HeaderApiVersionReader("apiversion");
+});
+
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddAntiforgery();
 var app = builder.Build();
@@ -78,6 +89,18 @@ app.MapGet("/get_person_data_with_validation", ([FromBody] Person data,IValidato
     return Results.ValidationProblem(result.ToDictionary(), statusCode: (int)HttpStatusCode.BadRequest);
 });
 
+
+var versionSet = app.NewApiVersionSet()
+ .HasApiVersion(1.0)
+ .HasApiVersion(2.0)
+ .Build();
+
+
+app.MapGet("/hello_world_version_header", () => "Hello world from v1.0")
+    .WithApiVersionSet(versionSet).MapToApiVersion(1.0);
+
+app.MapGet("/hello_world_version_header", () => "Hello version v2.0")
+    .WithApiVersionSet(versionSet).MapToApiVersion(2.0);
 
 app.UseAntiforgery();
 
