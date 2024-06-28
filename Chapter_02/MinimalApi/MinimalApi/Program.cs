@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MinimalApi.Endpoints;
 using MinimalApi.Models;
 using MinimalApi.Validators;
+using MinimalApi.Versioning;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -101,6 +102,9 @@ app.MapGet("/hello_world_version_header", () => "Hello world from v1.0")
 
 app.MapGet("/hello_world_version_header", () => "Hello version v2.0")
     .WithApiVersionSet(versionSet).MapToApiVersion(2.0);
+
+app.MapGroup("/v1").GroupVersion1();
+app.MapGroup("/v2").GroupVersion2();
 
 app.UseAntiforgery();
 
